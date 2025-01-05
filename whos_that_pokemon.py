@@ -13,6 +13,7 @@ nidorans are nidoran without the ♀ signs
 import tkinter as tk
 import os
 import random
+import sys
 from PIL import Image, ImageTk # PIL (pillow) used to display .webp
 from pokemon_data_new import pokemon_data # make sure data file is in same folder. is in seperate file so this is more readable
 
@@ -23,7 +24,11 @@ class whosThatPokemon:
             self.root = root
             self.root.title("Who's the Pokémon?") #displayed in window title
             self.root.geometry("700x500") #might experiement with different sizes if time = True
-            
+            self.base_path = self.get_base_path()  
+            self.full_images_folder = os.path.join(self.base_path, "pokemon_images_full")
+            self.silhouette_images_folder = os.path.join(self.base_path, "pokemon_images_silhouette")
+
+
             # all the important variables
             self.current_pokemon_name = "" # this is the english name that will be checked
             self.current_pokemon_name_german = "" # same thing but german (note from leonie: ew) 
@@ -39,7 +44,14 @@ class whosThatPokemon:
 
             # startup the selection screen
             self.setup_start_screen()
-    
+
+    def get_base_path(self):
+        """Returns the base path for resources."""
+        if hasattr(sys, "_MEIPASS"):
+            return sys._MEIPASS  # PyInstaller temp directory
+        return os.path.dirname(os.path.abspath(__file__))
+
+
     def setup_start_screen(self):
         """starts up the start screen (haha) which allows to select mode and explains the game"""
         # start screen title
@@ -129,7 +141,7 @@ class whosThatPokemon:
         self.current_pokemon_name_german = random_pokemon["name_german"]
 
         # select the folder based on mode 
-        folder = "pokemon_images_full" if self.mode == "normal" else "pokemon_images_silhouette"
+        folder = self.full_images_folder if self.mode == "normal" else self.silhouette_images_folder
         pokemon_image_key = 'image' if self.mode == "normal" else 'silhouette'
         pokemon_image = random_pokemon[pokemon_image_key]
 
